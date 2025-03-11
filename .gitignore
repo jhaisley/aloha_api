@@ -24,19 +24,13 @@ wheels/
 # Environment variables
 .env
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
+# Test coverage
 .coverage
-.coverage.*
-.cache
-nosetests.xml
 coverage.xml
-*.cover
-.hypothesis/
+htmlcov/
 
-# VS Code
-.vscode/
-
-# PyCharm
+# IDE
 .idea/
+.vscode/
+*.swp
+*.swo
