@@ -13,5 +13,5 @@ select = [
 ]
 ignore = []
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["aloha_api"]

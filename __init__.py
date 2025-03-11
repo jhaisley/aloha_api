@@ -20,23 +20,22 @@ from .api import (
     AlohaApiError,
     AuthenticationError,
     ConfigurationError,
-    ApiRequestError
+    ApiRequestError,
 )
 
 __all__ = [
-    'get_access_token',
-    'refresh_access_token',
-    'list_appointments',
-    'list_clients',
-    'list_authorizations',
-    'list_billing_ledger',
-    'list_authorizations_without_appointments',
-    'BASE_URL',
-    'CLIENT_ID',
+    "get_access_token",
+    "refresh_access_token",
+    "list_appointments",
+    "list_clients",
+    "list_authorizations",
+    "list_billing_ledger",
+    "list_authorizations_without_appointments",
+    "BASE_URL",
+    "CLIENT_ID",
     # Exception classes
-    'AlohaApiError',
-    'AuthenticationError',
-    'ConfigurationError',
-    'ApiRequestError'
+    "AlohaApiError",
+    "AuthenticationError",
+    "ConfigurationError",
+    "ApiRequestError",
 ]
-
