@@ -1,6 +1,6 @@
 [project]
 name = "aloha_api"
-version = "0.1.1"
+version = "0.2.0"
 description = "A Python client for the Aloha ABA Practice Management Software API"
 authors = [
     { name = "Jordan Haisley", email = "jordanhaisley@gmail.com" }
