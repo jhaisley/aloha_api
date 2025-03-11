@@ -20,6 +20,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Environment variables
 .env
@@ -34,3 +35,6 @@ htmlcov/
 .vscode/
 *.swp
 *.swo
+
+# Explicitly don't ignore build number
+!.buildnum

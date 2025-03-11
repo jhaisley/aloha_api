@@ -4,7 +4,7 @@ Aloha API Client
 A Python package for interacting with the Aloha ABA Practice Management Software API.
 """
 
-__version__ = "0.1.0"
+from ._version import __version__
 
 from .api import (  # isort: skip
     AlohaApiError,
@@ -36,4 +36,5 @@ __all__ = [
     "AuthenticationError",
     "ConfigurationError",
     "ApiRequestError",
+    "__version__",
 ]

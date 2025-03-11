@@ -1,11 +1,13 @@
 from setuptools import find_packages, setup
 
+from ._version import __version__
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="aloha_api",
-    version="0.1.0",
+    version=__version__,
     author="Jordan Haisley",
     author_email="jordanhaisley@gmail.com",
     description="A Python client for the Aloha ABA Practice Management Software API",
@@ -29,5 +31,6 @@ setup(
     install_requires=[
         "requests>=2.25.0",
         "python-dotenv>=0.19.0",
+        "tomli>=2.0.0",
     ],
 )
