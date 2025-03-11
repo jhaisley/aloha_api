@@ -46,7 +46,6 @@ jobs:
 
   increment-build:
     needs: build
-    # Skip if the commit is from our bot or if it's not a push to main
     if: |
       github.event_name == 'push' &&
       github.ref == 'refs/heads/main' &&
@@ -60,21 +59,26 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-    - name: Increment build number
-      id: build
+    - name: Increment version
+      id: version
       run: |
-        # Read and increment build number
-        BUILD_NUM=$(cat .buildnum)
-        NEW_BUILD_NUM=$((BUILD_NUM + 1))
-        echo $NEW_BUILD_NUM > .buildnum
-        echo "new_build_num=$NEW_BUILD_NUM" >> "$GITHUB_OUTPUT"
+        # Extract current version from pyproject.toml
+        CURRENT_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
         
-        # Extract version from pyproject.toml
-        VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
-        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-    - name: Update version files
+        # Split version into major.minor.patch
+        IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+        
+        # Increment patch version
+        new_patch=$((patch + 1))
+        NEW_VERSION="$major.$minor.$new_patch"
+        
+        # Update version in pyproject.toml
+        sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
+        
+        echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+        
+    - name: Commit and push version update
       run: |
-        # Commit and push the changes
-        git add .buildnum
-        git commit -m "chore: increment build number to ${{ steps.build.outputs.new_build_num }}"
+        git add pyproject.toml
+        git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
         git push
