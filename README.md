@@ -2,6 +2,10 @@
 
 A Python client for the Aloha ABA Practice Management Software API.
 
+
+[![Python package](https://github.com/jhaisley/aloha_api/actions/workflows/python-package.yml/badge.svg)](https://github.com/jhaisley/aloha_api/actions/workflows/python-package.yml)
+[![PyPi Package](https://github.com/jhaisley/aloha_api/actions/workflows/python-publish.yml/badge.svg)](https://github.com/jhaisley/aloha_api/actions/workflows/python-publish.yml)
+
 ## Installation
 
 ```bash
