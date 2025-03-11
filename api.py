@@ -158,7 +158,7 @@ def list_clients(access_token: str) -> Dict:
     headers = {"Authorization": f"Bearer {access_token}"}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url=url, headers=headers)
         return _handle_response(response, "List clients").json()
     except requests.exceptions.RequestException as err:
         raise ApiRequestError(f"Failed to list clients: {str(err)}") from err
@@ -188,7 +188,7 @@ def list_authorizations(access_token: str, start_date: str, end_date: str) -> Di
     headers = {"Authorization": f"Bearer {access_token}"}
 
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url=url, headers=headers)
         return _handle_response(response, "List authorizations").json()
     except requests.exceptions.RequestException as err:
         raise ApiRequestError(f"Failed to list authorizations: {str(err)}") from err
