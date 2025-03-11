@@ -1,7 +1,8 @@
-import unittest
 import os
 import sys
-from unittest.mock import patch, Mock
+import unittest
+from unittest.mock import Mock, patch
+
 import requests
 
 # Add parent directory to path so we can import the module
@@ -10,17 +11,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # Set testing environment variable
 os.environ["RUNNING_TESTS"] = "1"
 
-# Use direct imports from the api module
+# Use direct imports from the api module, sorted alphabetically
 from api import (
-    get_access_token,
-    refresh_access_token,
-    list_appointments,
-    list_clients,
-    list_authorizations,
-    list_billing_ledger,
-    list_authorizations_without_appointments,
     BASE_URL,
     CLIENT_ID,
+    get_access_token,
+    list_appointments,
+    list_authorizations,
+    list_authorizations_without_appointments,
+    list_billing_ledger,
+    list_clients,
+    refresh_access_token,
 )
 
 
@@ -357,7 +358,8 @@ class TestAlohaIntegration(unittest.TestCase):
         """Skip tests if integration tests are not enabled"""
         if not self.should_run_integration_tests():
             self.skipTest(
-                "Integration tests disabled. Set RUN_INTEGRATION_TESTS=1 or run directly with python -m unittest api.tests.test_api.TestAlohaIntegration"
+                "Integration tests disabled. Set RUN_INTEGRATION_TESTS=1 or run directly with: "
+                "python -m unittest api.tests.test_api.TestAlohaIntegration"
             )
 
         # Ensure we have an access token for each test
@@ -373,7 +375,7 @@ class TestAlohaIntegration(unittest.TestCase):
     def test_refresh_access_token_integration(self):
         """Test that we can refresh an access token from the API"""
         # Get a fresh token first to ensure we have valid tokens
-        auth_response = get_access_token()
+        # The token is obtained in setUpClass, no need to get it again
 
         # Extract refresh token from the initial authentication
         original_auth_data = None

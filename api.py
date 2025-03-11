@@ -1,6 +1,8 @@
-import os
-import requests
 import json
+import os
+from typing import Dict
+
+import requests
 from dotenv import load_dotenv
 
 # Load environment variables from .env file if present
@@ -53,33 +55,26 @@ def _redact_sensitive_data(data):
     redacted = data.copy()
     if "data" in redacted:
         if isinstance(redacted["data"], dict):
-            if "accessToken" in redacted["data"]:
-                # Don't redact during tests
-                if not os.environ.get("DEBUG_UNREDACT"):
-                    redacted["data"]["accessToken"] = redacted["data"]["accessToken"][:10] + "..."
-            if "refreshToken" in redacted["data"]:
-                # Don't redact during tests
-                if not os.environ.get("DEBUG_UNREDACT"):
-                    redacted["data"]["refreshToken"] = redacted["data"]["refreshToken"][:10] + "..."
+            if "accessToken" in redacted["data"] and not os.environ.get("DEBUG_UNREDACT"):
+                redacted["data"]["accessToken"] = redacted["data"]["accessToken"][:10] + "..."
+            if "refreshToken" in redacted["data"] and not os.environ.get("DEBUG_UNREDACT"):
+                redacted["data"]["refreshToken"] = redacted["data"]["refreshToken"][:10] + "..."
     return redacted
 
 
-def _handle_response(response, operation):
+def _handle_response(response: requests.Response, operation: str) -> requests.Response:
     """Handle API response and raise appropriate exceptions"""
     try:
-        if response.status_code == 200:
-            return response
-        elif response.status_code == 401:
-            raise AuthenticationError(f"{operation} failed: Invalid or expired token")
-        elif response.status_code == 429:
-            raise ApiRequestError(f"{operation} failed: Rate limit exceeded")
-        else:
+        if response.status_code == 401:
+            raise AuthenticationError(f"{operation} failed: {response.status_code} - {response.text}")
+        elif response.status_code != 200:
             raise ApiRequestError(f"{operation} failed: {response.status_code} - {response.text}")
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"{operation} failed: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"{operation} failed: {str(err)}") from err
+    return response
 
 
-def get_access_token():
+def get_access_token() -> str:
     """
     Authenticate with Aloha API and return the access token.
 
@@ -107,11 +102,11 @@ def get_access_token():
         else:
             raise ApiRequestError("No accessToken found in response JSON")
 
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Request failed: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Request failed: {str(err)}") from err
 
 
-def refresh_access_token(access_token, refresh_token):
+def refresh_access_token(access_token: str, refresh_token: str) -> Dict:
     """
     Refresh an expired access token using a refresh token.
 
@@ -143,11 +138,11 @@ def refresh_access_token(access_token, refresh_token):
 
         return response_json
 
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Request failed: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Request failed: {str(err)}") from err
 
 
-def list_appointments(access_token, start_date, end_date):
+def list_appointments(access_token: str, start_date: str, end_date: str) -> Dict:
     """
     Get appointments within a date range.
 
@@ -173,11 +168,11 @@ def list_appointments(access_token, start_date, end_date):
     try:
         response = requests.get(url, headers=headers)
         return _handle_response(response, "List appointments").json()
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Failed to list appointments: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Failed to list appointments: {str(err)}") from err
 
 
-def list_clients(access_token):
+def list_clients(access_token: str) -> Dict:
     """
     Get list of all clients.
 
@@ -200,11 +195,11 @@ def list_clients(access_token):
     try:
         response = requests.get(url, headers=headers)
         return _handle_response(response, "List clients").json()
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Failed to list clients: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Failed to list clients: {str(err)}") from err
 
 
-def list_authorizations(access_token, start_date, end_date):
+def list_authorizations(access_token: str, start_date: str, end_date: str) -> Dict:
     """
     Get authorizations within a date range.
 
@@ -230,11 +225,11 @@ def list_authorizations(access_token, start_date, end_date):
     try:
         response = requests.get(url, headers=headers)
         return _handle_response(response, "List authorizations").json()
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Failed to list authorizations: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Failed to list authorizations: {str(err)}") from err
 
 
-def list_billing_ledger(access_token, start_date, end_date):
+def list_billing_ledger(access_token: str, start_date: str, end_date: str) -> Dict:
     """
     Get billing ledger data within a date range.
 
@@ -264,11 +259,11 @@ def list_billing_ledger(access_token, start_date, end_date):
     try:
         response = requests.get(url, headers=headers)
         return _handle_response(response, "List billing ledger").json()
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Failed to list billing ledger: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Failed to list billing ledger: {str(err)}") from err
 
 
-def list_authorizations_without_appointments(access_token, start_date, end_date):
+def list_authorizations_without_appointments(access_token: str, start_date: str, end_date: str) -> Dict:
     """
     Get authorizations without scheduled appointments within a date range.
 
@@ -298,5 +293,5 @@ def list_authorizations_without_appointments(access_token, start_date, end_date)
     try:
         response = requests.get(url, headers=headers)
         return _handle_response(response, "List authorizations without appointments").json()
-    except requests.exceptions.RequestException as e:
-        raise ApiRequestError(f"Failed to list authorizations without appointments: {str(e)}")
+    except requests.exceptions.RequestException as err:
+        raise ApiRequestError(f"Failed to list authorizations without appointments: {str(err)}") from err
