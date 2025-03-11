@@ -318,7 +318,12 @@ class TestAlohaIntegration(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        """Get access token once for all tests"""
+        """Set up test environment variables"""
+        # Set dummy values for unit tests
+        if not cls.should_run_integration_tests():
+            os.environ["ALOHA_CLIENT_ID"] = "test_client_id"
+            os.environ["ALOHA_SECRET_KEY"] = "test_secret_key"
+        # For integration tests, use real values
         if cls.should_run_integration_tests():
             print("\nRunning integration tests with real API calls...")
             try:
@@ -341,7 +346,7 @@ class TestAlohaIntegration(unittest.TestCase):
             
         # Check environment variable
         env_value = os.environ.get('RUN_INTEGRATION_TESTS')
-        if env_value == '1' or env_value and env_value.lower() in ('true', 'yes', 'y'):
+        if (env_value == '1' or env_value and env_value.lower() in ('true', 'yes', 'y')):
             return True
         return False  # Default to not running integration tests
     
