@@ -193,7 +193,7 @@ class TestAlohaFunctions(unittest.TestCase):
         self.assertEqual(args[1]["url"], f"{BASE_URL}/v1/report/clients")
         self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
 
-    @patch("api.requests.request")
+    @patch("api.requests.get")
     def test_list_authorizations(self, mock_request):
         # Setup mock response with the actual API response structure
         mock_response = Mock()
@@ -217,13 +217,12 @@ class TestAlohaFunctions(unittest.TestCase):
         self.assertEqual(response, mock_response.json.return_value)
 
         # Verify the request was made correctly
-        mock_request.assert_called_once()
-        args = mock_request.call_args
-        self.assertEqual(args[1]["url"], 
-                     f"{BASE_URL}/v1/report/client-authorizations?startDate={start_date}&endDate={end_date}")
-        self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
+        mock_request.assert_called_once_with(
+            url=f"{BASE_URL}/v1/report/client-authorizations?startDate={start_date}&endDate={end_date}",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
 
-    @patch("api.requests.request")
+    @patch("api.requests.get")
     def test_list_billing_ledger(self, mock_request):
         # Setup mock response with the expected API response structure
         mock_response = Mock()
@@ -262,13 +261,12 @@ class TestAlohaFunctions(unittest.TestCase):
         self.assertEqual(response, mock_response.json.return_value)
 
         # Verify the request was made correctly
-        mock_request.assert_called_once()
-        args = mock_request.call_args
-        self.assertEqual(args[1]["url"], 
-                     f"{BASE_URL}/v1/report/billing-ledger?startDate={start_date}&endDate={end_date}")
-        self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
+        mock_request.assert_called_once_with(
+            url=f"{BASE_URL}/v1/report/billing-ledger?startDate={start_date}&endDate={end_date}",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
 
-    @patch("api.requests.request")
+    @patch("api.requests.get")
     def test_list_authorizations_without_appointments(self, mock_request):
         # Setup mock response with the expected API response structure
         mock_response = Mock()
@@ -305,11 +303,10 @@ class TestAlohaFunctions(unittest.TestCase):
         self.assertEqual(response, mock_response.json.return_value)
 
         # Verify the request was made correctly
-        mock_request.assert_called_once()
-        args = mock_request.call_args
-        self.assertEqual(args[1]["url"], 
-                     f"{BASE_URL}/v1/report/authorizations-without-appointments?startDate={start_date}&endDate={end_date}")
-        self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
+        mock_request.assert_called_once_with(
+            url=f"{BASE_URL}/v1/report/authorizations-without-appointments?startDate={start_date}&endDate={end_date}",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
 
 
 class TestAlohaIntegration(unittest.TestCase):
