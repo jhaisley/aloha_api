@@ -7,13 +7,13 @@ import tomli
 
 def get_version():
     """Get the package version from pyproject.toml."""
-    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "pyproject.toml")
+    path = os.path.join(os.path.dirname(__file__), "pyproject.toml")
     with open(path, mode="rb") as fp:
         pyproject = tomli.load(fp)
     version = pyproject["project"]["version"]
 
     # Try to read build number if it exists
-    build_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".buildnum")
+    build_path = os.path.join(os.path.dirname(__file__), ".buildnum")
     if os.path.exists(build_path):
         with open(build_path) as f:
             build_num = f.read().strip()
