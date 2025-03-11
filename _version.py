@@ -10,7 +10,7 @@ def get_version():
     with open(path, mode="rb") as fp:
         pyproject = tomli.load(fp)
     version = pyproject["project"]["version"]
-    
+
     # Try to read build number if it exists
     build_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".buildnum")
     if os.path.exists(build_path):
@@ -18,7 +18,7 @@ def get_version():
             build_num = f.read().strip()
             if build_num:
                 version = f"{version}+build.{build_num}"
-    
+
     return version
 
 

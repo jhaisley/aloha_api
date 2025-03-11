@@ -46,3 +46,6 @@ ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["aloha_api"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
