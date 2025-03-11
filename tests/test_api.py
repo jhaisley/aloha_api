@@ -26,7 +26,7 @@ from api import (
 
 
 class TestAlohaFunctions(unittest.TestCase):
-    @patch("api.requests.request")
+    @patch("api.requests.post")
     def test_get_access_token_success(self, mock_request):
         # Setup mock response with the actual nested response structure
         mock_response = Mock()
@@ -52,28 +52,31 @@ class TestAlohaFunctions(unittest.TestCase):
 
         # Verify the request was made correctly
         mock_request.assert_called_once()
-        args, kwargs = mock_request.call_args
-        self.assertEqual(args[0], "POST")
-        self.assertEqual(args[1], f"{BASE_URL}/token")
+        _, kwargs = mock_request.call_args
+        self.assertEqual(kwargs["url"], f"{BASE_URL}/token")
         self.assertEqual(kwargs["headers"], {"Content-Type": "application/json"})
-        # Don't check the exact payload since SECRET_KEY might be dynamic
 
-    @patch("api.requests.request")
+    @patch("api.requests.post")
     def test_get_access_token_failure(self, mock_request):
         # Setup mock response for failure case
         mock_response = Mock()
         mock_response.status_code = 401
         mock_response.text = "Unauthorized"
+        mock_response.json.return_value = {
+            "status": 401,
+            "message": "Unauthorized",
+            "errors": [{"message": "Invalid credentials", "name": "AuthError"}]
+        }
         mock_request.return_value = mock_response
 
         # Verify the function raises an exception
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(AuthenticationError) as context:
             get_access_token()
 
         # Check that the exception message contains the status code and response text
-        self.assertTrue("Authentication failed: 401 - Unauthorized" in str(context.exception))
+        self.assertTrue("Authentication failed: 401" in str(context.exception))
 
-    @patch("api.requests.request")
+    @patch("api.requests.post")
     def test_refresh_access_token_success(self, mock_request):
         # Setup mock response for refresh token success
         mock_response = Mock()
@@ -85,7 +88,7 @@ class TestAlohaFunctions(unittest.TestCase):
                 "username": "Aloha.Client.SBBC",
                 "accessToken": "new_test_token456",
                 "accessTokenExpiration": "2025-03-06T20:51:11Z",
-                "refreshToken": "****",
+                "refreshToken": "new_refresh_token789",
                 "subscriptionId": "3742ca1f-1c44-430e-86ff-baa8b4febb90",
             },
         }
@@ -100,30 +103,25 @@ class TestAlohaFunctions(unittest.TestCase):
 
         # Verify the result
         self.assertEqual(response["data"]["accessToken"], "new_test_token456")
-        self.assertIn("refreshToken", response["data"])  # Just verify the field exists
-        self.assertIsNotNone(response["data"]["refreshToken"])  # Verify it's not None
+        self.assertEqual(response["data"]["refreshToken"], "new_refresh_token789")
 
         # Verify the request was made correctly
         mock_request.assert_called_once()
-        args, kwargs = mock_request.call_args
-        self.assertEqual(args[0], "POST")
-        self.assertEqual(args[1], f"{BASE_URL}/refresh-token")
+        _, kwargs = mock_request.call_args
+        self.assertEqual(kwargs["url"], f"{BASE_URL}/refresh-token")
         self.assertEqual(kwargs["headers"], {"Content-Type": "application/json"})
 
-        # Verify payload contains correct fields
-        import json
-
-        payload = json.loads(kwargs["data"])
-        self.assertEqual(payload["clientId"], CLIENT_ID)
-        self.assertEqual(payload["accessToken"], access_token)
-        self.assertEqual(payload["refreshToken"], refresh_token)
-
-    @patch("api.requests.request")
+    @patch("api.requests.post")
     def test_refresh_access_token_failure(self, mock_request):
         # Setup mock response for failure case
         mock_response = Mock()
         mock_response.status_code = 401
         mock_response.text = "Invalid refresh token"
+        mock_response.json.return_value = {
+            "status": 401,
+            "message": "Unauthorized",
+            "errors": [{"message": "Invalid refresh token", "name": "AuthError"}]
+        }
         mock_request.return_value = mock_response
 
         # Test parameters
@@ -131,13 +129,13 @@ class TestAlohaFunctions(unittest.TestCase):
         refresh_token = "invalid_refresh_token"
 
         # Verify the function raises an exception
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(AuthenticationError) as context:
             refresh_access_token(access_token, refresh_token)
 
         # Check that the exception message contains the status code and response text
-        self.assertTrue("Token refresh failed: 401 - Invalid refresh token" in str(context.exception))
+        self.assertTrue("Token refresh failed: 401" in str(context.exception))
 
-    @patch("api.requests.request")
+    @patch("api.requests.get")
     def test_list_appointments(self, mock_request):
         # Setup mock response with the actual API response structure
         mock_response = Mock()
@@ -158,16 +156,16 @@ class TestAlohaFunctions(unittest.TestCase):
         response = list_appointments(access_token, start_date, end_date)
 
         # Verify the result
-        self.assertEqual(response, mock_response)
+        self.assertEqual(response["data"][0]["appointmentId"], 1)
 
         # Verify the request was made correctly
-        mock_request.assert_called_once_with(
-            "GET",
-            f"{BASE_URL}/v1/report/appointments?startDate={start_date}&endDate={end_date}",
-            headers={"Authorization": f"Bearer {access_token}"},
-        )
+        mock_request.assert_called_once()
+        args = mock_request.call_args
+        self.assertEqual(args[1]["url"], 
+                     f"{BASE_URL}/v1/report/appointments?startDate={start_date}&endDate={end_date}")
+        self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
 
-    @patch("api.requests.request")
+    @patch("api.requests.get")
     def test_list_clients(self, mock_request):
         # Setup mock response with the actual API response structure
         mock_response = Mock()

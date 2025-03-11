@@ -75,22 +75,13 @@ def _handle_response(response: requests.Response, operation: str) -> requests.Re
 
 
 def get_access_token() -> str:
-    """
-    Authenticate with Aloha API and return the access token.
-
-    Returns:
-        str: The access token if authentication is successful
-
-    Raises:
-        AuthenticationError: If authentication fails
-        ApiRequestError: If the API request fails
-    """
+    """Authenticate with Aloha API and return the access token."""
     url = f"{BASE_URL}/token"
     payload = json.dumps({"clientId": CLIENT_ID, "secretKey": SECRET_KEY})
     headers = {"Content-Type": "application/json"}
 
     try:
-        response = requests.post(url, headers=headers, data=payload)
+        response = requests.post(url=url, headers=headers, data=payload)
         response = _handle_response(response, "Authentication")
 
         response_json = response.json()
@@ -107,20 +98,7 @@ def get_access_token() -> str:
 
 
 def refresh_access_token(access_token: str, refresh_token: str) -> Dict:
-    """
-    Refresh an expired access token using a refresh token.
-
-    Args:
-        access_token (str): The expired access token
-        refresh_token (str): The refresh token received with the original authentication
-
-    Returns:
-        dict: The full token response containing new access and refresh tokens
-
-    Raises:
-        AuthenticationError: If token refresh fails due to invalid tokens
-        ApiRequestError: If the API request fails
-    """
+    """Refresh an expired access token using a refresh token."""
     if not access_token or not refresh_token:
         raise ValueError("Both access_token and refresh_token are required")
 
@@ -129,7 +107,7 @@ def refresh_access_token(access_token: str, refresh_token: str) -> Dict:
     headers = {"Content-Type": "application/json"}
 
     try:
-        response = requests.post(url, headers=headers, data=payload)
+        response = requests.post(url=url, headers=headers, data=payload)
         response = _handle_response(response, "Token refresh")
 
         response_json = response.json()
@@ -143,22 +121,7 @@ def refresh_access_token(access_token: str, refresh_token: str) -> Dict:
 
 
 def list_appointments(access_token: str, start_date: str, end_date: str) -> Dict:
-    """
-    Get appointments within a date range.
-
-    Args:
-        access_token (str): Authentication token from get_access_token()
-        start_date (str): Start date in format YYYY-MM-DD
-        end_date (str): End date in format YYYY-MM-DD
-
-    Returns:
-        dict: The API response data containing appointments
-
-    Raises:
-        AuthenticationError: If the access token is invalid
-        ApiRequestError: If the API request fails
-        ValueError: If start_date or end_date are invalid
-    """
+    """Get appointments within a date range."""
     if not all([access_token, start_date, end_date]):
         raise ValueError("access_token, start_date, and end_date are required")
 
@@ -166,8 +129,10 @@ def list_appointments(access_token: str, start_date: str, end_date: str) -> Dict
     headers = {"Authorization": f"Bearer {access_token}"}
 
     try:
-        response = requests.get(url, headers=headers)
-        return _handle_response(response, "List appointments").json()
+        response = requests.get(url=url, headers=headers)
+        response_json = _handle_response(response, "List appointments").json()
+        return response_json
+
     except requests.exceptions.RequestException as err:
         raise ApiRequestError(f"Failed to list appointments: {str(err)}") from err
 
@@ -257,8 +222,10 @@ def list_billing_ledger(access_token: str, start_date: str, end_date: str) -> Di
     headers = {"Authorization": f"Bearer {access_token}"}
 
     try:
-        response = requests.get(url, headers=headers)
-        return _handle_response(response, "List billing ledger").json()
+        response = requests.get(url=url, headers=headers)
+        response_json = _handle_response(response, "List billing ledger").json()
+        return response_json
+
     except requests.exceptions.RequestException as err:
         raise ApiRequestError(f"Failed to list billing ledger: {str(err)}") from err
 
@@ -291,7 +258,9 @@ def list_authorizations_without_appointments(access_token: str, start_date: str,
     headers = {"Authorization": f"Bearer {access_token}"}
 
     try:
-        response = requests.get(url, headers=headers)
-        return _handle_response(response, "List authorizations without appointments").json()
+        response = requests.get(url=url, headers=headers)
+        response_json = _handle_response(response, "List authorizations without appointments").json()
+        return response_json
+
     except requests.exceptions.RequestException as err:
         raise ApiRequestError(f"Failed to list authorizations without appointments: {str(err)}") from err
