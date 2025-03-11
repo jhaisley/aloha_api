@@ -1,4 +1,5 @@
 """Version information."""
+
 import os
 
 import tomli
