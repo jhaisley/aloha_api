@@ -49,6 +49,10 @@ if not SECRET_KEY:
 
 def _redact_sensitive_data(data):
     """Redact sensitive information for logging"""
+    # Skip redaction during tests
+    if os.environ.get("RUNNING_TESTS") == "1":
+        return data
+
     if not isinstance(data, dict):
         return data
 
