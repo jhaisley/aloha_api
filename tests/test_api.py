@@ -66,7 +66,7 @@ class TestAlohaFunctions(unittest.TestCase):
         mock_response.json.return_value = {
             "status": 401,
             "message": "Unauthorized",
-            "errors": [{"message": "Invalid credentials", "name": "AuthError"}]
+            "errors": [{"message": "Invalid credentials", "name": "AuthError"}],
         }
         mock_request.return_value = mock_response
 
@@ -121,7 +121,7 @@ class TestAlohaFunctions(unittest.TestCase):
         mock_response.json.return_value = {
             "status": 401,
             "message": "Unauthorized",
-            "errors": [{"message": "Invalid refresh token", "name": "AuthError"}]
+            "errors": [{"message": "Invalid refresh token", "name": "AuthError"}],
         }
         mock_request.return_value = mock_response
 
@@ -162,8 +162,7 @@ class TestAlohaFunctions(unittest.TestCase):
         # Verify the request was made correctly
         mock_request.assert_called_once()
         args = mock_request.call_args
-        self.assertEqual(args[1]["url"], 
-                     f"{BASE_URL}/v1/report/appointments?startDate={start_date}&endDate={end_date}")
+        self.assertEqual(args[1]["url"], f"{BASE_URL}/v1/report/appointments?startDate={start_date}&endDate={end_date}")
         self.assertEqual(args[1]["headers"], {"Authorization": f"Bearer {access_token}"})
 
     @patch("api.requests.get")
@@ -219,7 +218,7 @@ class TestAlohaFunctions(unittest.TestCase):
         # Verify the request was made correctly
         mock_request.assert_called_once_with(
             url=f"{BASE_URL}/v1/report/client-authorizations?startDate={start_date}&endDate={end_date}",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
     @patch("api.requests.get")
@@ -263,7 +262,7 @@ class TestAlohaFunctions(unittest.TestCase):
         # Verify the request was made correctly
         mock_request.assert_called_once_with(
             url=f"{BASE_URL}/v1/report/billing-ledger?startDate={start_date}&endDate={end_date}",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
     @patch("api.requests.get")
@@ -305,7 +304,7 @@ class TestAlohaFunctions(unittest.TestCase):
         # Verify the request was made correctly
         mock_request.assert_called_once_with(
             url=f"{BASE_URL}/v1/report/authorizations-without-appointments?startDate={start_date}&endDate={end_date}",
-            headers={"Authorization": f"Bearer {access_token}"}
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
 
