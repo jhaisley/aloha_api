@@ -36,5 +36,5 @@ htmlcov/
 *.swp
 *.swo
 
-# Explicitly don't ignore build number
-!.buildnum
+# Pre-commit config
+.pre-commit-config.yaml
